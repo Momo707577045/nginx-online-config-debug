@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="keywords" content="本地字体检测工具">
+  <meta name="description" content="Local Font Checker for web,检查所安装字体,检查本机是否安装某字体,Momo's Blog, LuckyMomo">
+  <title>Local Font Checker</title>
+  <style>
+    /*全局设置*/
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    body::-webkit-scrollbar {
+      display: none
+    }
+
+    p {
+      margin: 0;
+    }
+
+    [v-cloak] {
+      display: none;
+    }
+
+    #m-app {
+      height: 100%;
+      width: 100%;
+      text-align: center;
+      padding: 10px 50px 80px;
+      box-sizing: border-box;
+    }
+
+    .m-p-action {
+      margin: 20px auto;
+      max-width: 1100px;
+      width: 100%;
+      font-size: 35px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .m-p-other,
+    .m-p-github {
+      position: fixed;
+      right: 50px;
+      bottom: 70px;
+      background-color: #eff3f6;
+      background-image: linear-gradient(-180deg, #fafbfc, #eff3f6 90%);
+      color: #24292e;
+      border: 1px solid rgba(27, 31, 35, .2);
+      border-radius: 3px;
+      cursor: pointer;
+      display: inline-block;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 20px;
+      padding: 6px 12px;
+      z-index: 99;
+    }
+
+    .m-p-help {
+      position: fixed;
+      right: 50px;
+      top: 50px;
+      width: 30px;
+      height: 30px;
+      color: #666666;
+      z-index: 2;
+      line-height: 30px;
+      font-weight: bolder;
+      border-radius: 50%;
+      border: 1px solid rgba(27, 31, 35, .2);
+      cursor: pointer;
+      background-color: #eff3f6;
+      background-image: linear-gradient(-180deg, #fafbfc, #eff3f6 90%);
+    }
+
+    .m-p-github:hover,
+    .m-p-other:hover,
+    .m-p-help {
+      opacity: 0.9;
+    }
+
+    .m-p-other {
+      bottom: 30px;
+    }
+
+    .textarea-box {
+      width: 100%;
+      min-height: 300px;
+    }
+
+    .url-box {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .url-box input {
+      margin-bottom: 10px;
+      margin-right: 12px;
+      display: block;
+      width: 100%;
+      padding: 16px;
+      font-size: 24px;
+      border-radius: 4px;
+      box-shadow: none;
+      box-sizing: border-box;
+      color: #444444;
+      border: 1px solid #cccccc;
+    }
+
+    .btn {
+      position: relative;
+      height: 60px;
+      width: 49%;
+      line-height: 60px;
+      font-size: 24px;
+      color: white;
+      cursor: pointer;
+      border-radius: 4px;
+      border: 1px solid #eeeeee;
+      background-color: #3D8AC7;
+      opacity: 1;
+      transition: 0.3s all;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+      border-color: transparent;
+      box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.3);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="m-loading">
+    页面加载中，请耐心等待...
+    <h1 style="white-space: pre;">
+      快速测试当前机器是否已经安装某字体，获取当前系统所有已安装字体
+      工具链接：https://blog.luckly-mjw.cn/tool-show/local-font-checker/index.html
+      原理教程：https://www.zhangxinxu.com/wordpress/2018/02/js-detect-suppot-font-family/
+      <img src="https://upyun.luckly-mjw.cn/Assets/blog/local-font-checker.png" alt="本地字体测试工具" title="logo" />
+      <a target="_blank" href="https://blog.luckly-mjw.cn/tool-show/local-font-checker/index.html">点击跳转</a>
+    </h1>
+  </div>
+  <section id="m-app" v-cloak>
+    <!--顶部操作提示-->
+    <section class="m-p-action g-box">{{tips}}</section>
+    <a class="m-p-help" target="_blank"
+      href="https://www.zhangxinxu.com/wordpress/2018/02/js-detect-suppot-font-family/">?</a>
+    <a class="m-p-github" target="_blank" href="https://github.com/Momo707577045/local-font-checker">github</a>
+    <a class="m-p-other" target="_blank" href="http://blog.luckly-mjw.cn/tool-show/index.html">其他实用工具</a>
+
+    <!--文件载入-->
+    <textarea v-model="locationConf" class="textarea-box"></textarea>
+    <div class="url-box">
+      <input type="text" v-model="testPath" placeholder="测试连接">
+      <div class="btn" @click="test" :disabled="loading">测试</div>
+    </div>
+    <textarea v-model="accessStr" class="textarea-box" readonly></textarea>
+    <textarea v-model="errorStr" class="textarea-box" readonly></textarea>
+  </section>
+</body>
+
+<script>
+  var _hmt = _hmt || [];
+  (function () {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?1f12b0865d866ae1b93514870d93ce89";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+</script>
+<!--vue 前端框架-->
+<script src="http://upyun.luckly-mjw.cn/lib/vue.js"></script>
+
+<script>
+  document.getElementById('m-loading') && document.getElementById('m-loading').remove()
+  new Vue({
+    el: '#m-app',
+
+    data() {
+      return {
+        tips: 'nginx 测试', // 顶部提示
+        locationConf: 'location / { root /etc/nginx;        try_files $uri $uri/ /index.html; default_type text/plain;   }', // 
+        accessStr: '', //
+        errorStr: '', //
+        testPath: '/inde.html', //
+        loading: false,
+        // locationConf: '', // 
+        // accessStr: '', //
+        // errorStr: '', //
+        // testPath: '', //
+        // loading: false,
+      }
+    },
+
+    created() {
+      window.addEventListener('keyup', this.onKeyup)
+    },
+
+    methods: {
+      // ajax请求
+      ajax({ type = 'GET', url, data }) {
+        return new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+              var status = xhr.status;
+              if (status >= 200 && status < 300) {
+                console.log(xhr)
+                resolve(xhr.responseText)
+              } else {
+                reject(xhr)
+              }
+            }
+          };
+
+          console.log('ajax', url);
+
+          //连接 和 发送 - 第二步
+          if (type == "GET") {
+            xhr.open("GET", url, true);
+            xhr.send(null);
+          } else {
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader('Content-Type', 'application/json') // 设置表单提交时的内容类型
+            xhr.send(JSON.stringify(data));
+          }
+        })
+      },
+
+      async test() {
+        if (this.loading) {
+          return
+        }
+        this.loading = true
+        const setResult = await this.ajax({
+          url: 'http://47.106.237.101:11006',
+          type: 'post',
+          data: { conf: this.locationConf }
+        })
+        if (setResult !== 'ok') {
+          alert('配置错误，请检查')
+          this.accessStr = setResult;
+          this.errorStr = '';
+          this.loading = false
+          return
+        }
+
+        setTimeout(async () => {
+          try {
+            await this.ajax({ url: `http://nginx-test.luckly-mjw.cn/${this.testPath}` })
+          } catch (error) {
+
+          }
+          this.accessStr = await this.ajax({ url: `http://47.106.237.101:11005/access.log` })
+          this.errorStr = await this.ajax({ url: `http://47.106.237.101:11005/error.log` })
+          this.loading = false
+        }, 2000)
+      },
+
+      // 拷贝剪切板
+      copyToClipboard(content) {
+        clearTimeout(this.tipsTimer)
+        this.tips = `复制成功: ${content}`
+        this.tipsTimer = setTimeout(() => { this.tips = `点击复制字体名` }, 1000)
+
+        if (!document.queryCommandSupported('copy')) {
+          return false
+        }
+
+        let $input = document.createElement('textarea')
+        $input.style.opacity = '0'
+        $input.value = content
+        document.body.appendChild($input)
+        $input.select()
+
+        const result = document.execCommand('copy')
+        document.body.removeChild($input)
+        $input = null
+
+        return result
+      },
+    }
+
+  })
+</script>
+
+</html>
