@@ -164,6 +164,7 @@
       <input type="text" v-model="testPath" placeholder="测试连接">
       <div class="btn" @click="test" :disabled="loading">测试</div>
     </div>
+    <textarea v-model="resultStr" class="textarea-box" readonly></textarea>
     <textarea v-model="accessStr" class="textarea-box" readonly></textarea>
     <textarea v-model="errorStr" class="textarea-box" readonly></textarea>
   </section>
@@ -190,6 +191,7 @@
       return {
         tips: 'nginx 测试', // 顶部提示
         locationConf: 'location / { root /etc/nginx;        try_files $uri $uri/ /index.html; default_type text/plain;   }', // 
+        resultStr: '', //
         accessStr: '', //
         errorStr: '', //
         testPath: '/inde.html', //
@@ -218,7 +220,7 @@
                 console.log(xhr)
                 resolve(xhr.responseText)
               } else {
-                reject(xhr)
+                resolve(xhr.responseText)
               }
             }
           };
@@ -257,10 +259,11 @@
 
         setTimeout(async () => {
           try {
-            await this.ajax({ url: `http://nginx-test.luckly-mjw.cn/${this.testPath}` })
+            this.resultStr = await this.ajax({ url: `http://nginx-test.luckly-mjw.cn/${this.testPath}` })
           } catch (error) {
 
           }
+
           this.accessStr = await this.ajax({ url: `http://47.106.237.101:11005/access.log` })
           this.errorStr = await this.ajax({ url: `http://47.106.237.101:11005/error.log` })
           this.loading = false
