@@ -33,7 +33,7 @@
       height: 100%;
       width: 100%;
       text-align: center;
-      padding: 10px 50px 80px;
+      padding: 10px 20px 80px;
       box-sizing: border-box;
     }
 
@@ -95,25 +95,43 @@
     .textarea-box {
       width: 100%;
       min-height: 300px;
+      resize: none;
+      border-radius: 4px;
     }
 
     .url-box {
+      position: relative;
       display: flex;
       justify-content: space-between;
     }
 
+    .url-box .prefix {
+      position: absolute;
+      padding: 16px 10px;
+      flex: 0 0 310px;
+      font-size: 22px;
+      border-radius: 4px;
+      color: #777777;
+      background-color: #ededed
+    }
+
     .url-box input {
+      flex: 1;
       margin-bottom: 10px;
       margin-right: 12px;
       display: block;
-      width: 100%;
-      padding: 16px;
+      padding: 16px 6px;
       font-size: 24px;
+      text-indent: 360px;
       border-radius: 4px;
       box-shadow: none;
       box-sizing: border-box;
       color: #444444;
       border: 1px solid #cccccc;
+    }
+
+    .url-box .btn {
+      flex: 0 0 200px;
     }
 
     .btn {
@@ -135,6 +153,51 @@
       opacity: 0.9;
       border-color: transparent;
       box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.3);
+    }
+
+    .loading {
+      cursor: not-allowed;
+      background-color: #dddddd;
+    }
+
+    .config-box {
+      margin-bottom: 10px;
+      padding: 4px;
+      box-sizing: 100%;
+      border-radius: 4px;
+      border: 1px solid #eeeeee;
+      background-color: #eeeeee;
+    }
+
+    .config-box textarea {
+      margin: 0;
+      width: calc(100% - 54px);
+      border-radius: 4px;
+    }
+
+    .config-box pre {
+      margin: 0;
+      text-align: left;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .row .space {
+      flex: 0 0 20px;
+      width: 20px;
+    }
+
+    .row .title {
+      font-weight: bold;
+      font-size: 24px;
+      text-align: left;
+    }
+
+    .row>div {
+      flex: 1;
     }
   </style>
 </head>
@@ -159,14 +222,46 @@
     <a class="m-p-other" target="_blank" href="http://blog.luckly-mjw.cn/tool-show/index.html">其他实用工具</a>
 
     <!--文件载入-->
-    <textarea v-model="locationConf" class="textarea-box"></textarea>
     <div class="url-box">
-      <input type="text" v-model="testPath" placeholder="测试连接">
-      <div class="btn" @click="test" :disabled="loading">测试</div>
+      <div class="prefix">http://nginx-test.luckly-mjw.cn/</div><input type="text" v-model="testPath" placeholder="测试 URI">
+      <div class="btn" @click="test" :class="{loading: loading}" :disabled="loading">{{ loading ? '接口测试中...' : '发起接口测试'
+        }}</div>
     </div>
-    <textarea v-model="resultStr" class="textarea-box" readonly></textarea>
-    <textarea v-model="accessStr" class="textarea-box" readonly></textarea>
-    <textarea v-model="errorStr" class="textarea-box" readonly></textarea>
+    <div class="row">
+      <div>
+        <div class="title">location 配置</div>
+        <div class="config-box">
+          <pre>
+server {
+    listen 80;
+    server_name nginx-test.luckly-mjw.cn;
+    error_log  /var/log/nginx/error.log debug;
+    access_log  /var/log/nginx/access.log  main;
+    autoindex_localtime on;</pre>
+          <textarea v-model="locationConf" class="textarea-box" @keydown="tabKey"></textarea>
+          <pre>}</pre>
+        </div>
+      </div>
+      <div class="space"> </div>
+      <div>
+        <div class="title">接口响应</div>
+        <textarea v-model="resultStr" class="textarea-box" readonly disabled style="height: 420px"
+          placeholder="等待接口测试"></textarea>
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <div class="title">error.log（NGINX 解析过程）</div>
+        <textarea v-model="errorStr" class="textarea-box" readonly disabled style="height: 600px"
+          placeholder="等待接口测试"></textarea>
+      </div>
+      <div class="space"> </div>
+      <div>
+        <div class="title">access.log（访问记录）</div>
+        <textarea v-model="accessStr" class="textarea-box" readonly disabled style="height: 600px"
+          placeholder="等待接口测试"></textarea>
+      </div>
+    </div>
   </section>
 </body>
 
@@ -189,12 +284,12 @@
 
     data() {
       return {
-        tips: 'nginx 测试', // 顶部提示
+        tips: 'NGINX 测试', // 顶部提示
         locationConf: 'location / { root /etc/nginx;        try_files $uri $uri/ /index.html; default_type text/plain;   }', // 
         resultStr: '', //
         accessStr: '', //
         errorStr: '', //
-        testPath: '/inde.html', //
+        testPath: 'index.html', //
         loading: false,
         // locationConf: '', // 
         // accessStr: '', //
@@ -259,15 +354,32 @@
 
         setTimeout(async () => {
           try {
-            this.resultStr = await this.ajax({ url: `http://nginx-test.luckly-mjw.cn/${this.testPath}` })
+            this.resultStr = await this.ajax({ url: `http://nginx-test.luckly-mjw.cn/${this.testPath}` }) || '空数据'
           } catch (error) {
 
           }
 
-          this.accessStr = await this.ajax({ url: `http://47.106.237.101:11005/access.log` })
-          this.errorStr = await this.ajax({ url: `http://47.106.237.101:11005/error.log` })
+          this.accessStr = await this.ajax({ url: `http://47.106.237.101:11005/access.log` }) || '空数据'
+          this.errorStr = await this.ajax({ url: `http://47.106.237.101:11005/error.log` }) || '空数据'
           this.loading = false
         }, 2000)
+      },
+
+      tabKey(event) {
+        const textarea = event.target
+        if (event.key === 'Tab') {
+          event.preventDefault();
+
+          // 在光标位置插入 Tab 符号
+          const start = textarea.selectionStart;
+          const end = textarea.selectionEnd;
+          const text = textarea.value;
+          this.locationConf = text.substring(0, start) + '\t' + text.substring(end);
+          this.$nextTick(() => {
+            // 将光标位置移动到插入的 Tab 后面
+            textarea.selectionStart = textarea.selectionEnd = start + 1;
+          })
+        }
       },
 
       // 拷贝剪切板
