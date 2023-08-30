@@ -6,9 +6,9 @@
   <meta name="viewport"
     content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <meta name="keywords" content="nginx 在线配置测试工具">
-  <meta name="description" content="Nginx online config test,Nginx 在线配置测试,Nginx 调试,Nginx 解析过程,Momo's Blog, LuckyMomo">
-  <title>Local Font Checker</title>
+  <meta name="keywords" content="nginx 在线配置调试工具">
+  <meta name="description" content="Nginx online config debug,Nginx 在线配置调试,Nginx 调试,Nginx 解析过程,Momo's Blog, LuckyMomo">
+  <title>Nginx Online Debug</title>
   <style>
     /*全局设置*/
     html,
@@ -206,24 +206,25 @@
   <div id="m-loading">
     页面加载中，请耐心等待...
     <h1 style="white-space: pre;">
-      NGINX 在线配置测试工具,Nginx online config test,Nginx 在线配置测试,Nginx 调试,Nginx 解析过程
-      工具链接：https://blog.luckly-mjw.cn/tool-show/nginx-online-config-test/index.html
-      <img src="https://upyun.luckly-mjw.cn/Assets/blog/nginx-online-config-test.png" alt="本地字体测试工具" title="logo" />
-      <a target="_blank" href="https://blog.luckly-mjw.cn/tool-show/nginx-online-config-test/index.html">点击跳转</a>
+      NGINX 在线配置调试工具,Nginx online config debug,Nginx 在线配置调试,Nginx 调试,Nginx 解析过程
+      工具链接：https://blog.luckly-mjw.cn/tool-show/nginx-online-config-debug/index.html
+      <img src="https://upyun.luckly-mjw.cn/Assets/blog/nginx-online-config-debug.png" alt="NGINX 在线配置调试工具"
+        title="logo" />
+      <a target="_blank" href="https://blog.luckly-mjw.cn/tool-show/nginx-online-config-debug/index.html">点击跳转</a>
     </h1>
   </div>
   <section id="m-app" v-cloak>
     <!--顶部操作提示-->
     <section class="m-p-action g-box">{{tips}}</section>
     <a class="m-p-help" target="_blank" href="https://tengine.taobao.org/nginx_docs/en/">?</a>
-    <a class="m-p-github" target="_blank" href="https://github.com/Momo707577045/nginx-online-config-test">github</a>
+    <a class="m-p-github" target="_blank" href="https://github.com/Momo707577045/nginx-online-config-debug">github</a>
     <a class="m-p-other" target="_blank" href="http://blog.luckly-mjw.cn/tool-show/index.html">其他实用工具</a>
 
     <!--文件载入-->
     <div class="url-box">
       <div class="prefix">http://nginx-test.luckly-mjw.cn/</div><input type="text" v-model="testPath"
-        placeholder="测试 URI">
-      <div class="btn" @click="test" :class="{loading: loading}" :disabled="loading">{{ loading ? '接口测试中...' : '发起接口测试'
+        placeholder="调试 URI">
+      <div class="btn" @click="test" :class="{loading: loading}" :disabled="loading">{{ loading ? '接口调试中...' : '发起接口调试'
         }}</div>
     </div>
     <div class="row">
@@ -231,9 +232,9 @@
         <div class="title">
           location 配置
           <a style="float:right" target="_blank"
-            href="http://upyun.luckly-mjw.cn/Assets/nginx-online-config-test/tree.png">测试目录</a>
+            href="http://upyun.luckly-mjw.cn/Assets/nginx-online-config-debug/tree.png">调试目录</a>
           <a style="float:right;margin-right: 10px;" target="_blank"
-            href="https://github.com/Momo707577045/nginx-online-config-test-data/blob/master/resource/assets/bg.jpg">测试文件夹</a>
+            href="https://github.com/Momo707577045/nginx-online-config-debug-data/blob/master/resource/assets/bg.jpg">调试文件夹</a>
         </div>
         <div class="config-box">
           <pre>
@@ -251,20 +252,20 @@ server {
       <div>
         <div class="title">接口响应</div>
         <textarea v-model="resultStr" class="textarea-box" readonly disabled style="height: 420px"
-          placeholder="等待接口测试"></textarea>
+          placeholder="等待接口调试"></textarea>
       </div>
     </div>
     <div class="row">
       <div>
         <div class="title">access.log（访问记录）</div>
         <textarea v-model="accessStr" class="textarea-box" readonly disabled style="height: 600px"
-          placeholder="等待接口测试"></textarea>
+          placeholder="等待接口调试"></textarea>
       </div>
       <div class="space"> </div>
       <div>
         <div class="title">error.log（NGINX 解析过程）</div>
         <textarea v-model="errorStr" class="textarea-box" readonly disabled style="height: 600px"
-          placeholder="等待接口测试"></textarea>
+          placeholder="等待接口调试"></textarea>
       </div>
     </div>
   </section>
@@ -280,16 +281,21 @@ server {
   })();
 </script>
 <!--vue 前端框架-->
-<script src="http://upyun.luckly-mjw.cn/lib/vue.js"></script>
+<script src="https://upyun.luckly-mjw.cn/lib/vue.js"></script>
 
 <script>
+  if (location.protocol.includes('https')) {
+    const url = new URL(location.href)
+    url.protocol = 'http:'
+    location.href = url.href
+  }
   document.getElementById('m-loading') && document.getElementById('m-loading').remove()
   new Vue({
     el: '#m-app',
 
     data() {
       return {
-        tips: 'NGINX 测试', // 顶部提示
+        tips: 'NGINX 在线配置调试工具', // 顶部提示
         resultStr: '', //
         accessStr: '', //
         errorStr: '', //
@@ -382,38 +388,14 @@ location ^~/m/ {
           const start = textarea.selectionStart;
           const end = textarea.selectionEnd;
           const text = textarea.value;
-          this.locationConf = text.substring(0, start) + '\t' + text.substring(end);
+          this.locationConf = text.substring(0, start) + '    ' + text.substring(end);
           this.$nextTick(() => {
             // 将光标位置移动到插入的 Tab 后面
             textarea.selectionStart = textarea.selectionEnd = start + 1;
           })
         }
       },
-
-      // 拷贝剪切板
-      copyToClipboard(content) {
-        clearTimeout(this.tipsTimer)
-        this.tips = `复制成功: ${content}`
-        this.tipsTimer = setTimeout(() => { this.tips = `点击复制字体名` }, 1000)
-
-        if (!document.queryCommandSupported('copy')) {
-          return false
-        }
-
-        let $input = document.createElement('textarea')
-        $input.style.opacity = '0'
-        $input.value = content
-        document.body.appendChild($input)
-        $input.select()
-
-        const result = document.execCommand('copy')
-        document.body.removeChild($input)
-        $input = null
-
-        return result
-      },
     }
-
   })
 </script>
 
