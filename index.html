@@ -157,7 +157,7 @@
 
     .loading {
       cursor: not-allowed;
-      background-color: #dddddd;
+      background-color: #aaa;
     }
 
     .config-box {
@@ -206,9 +206,8 @@
   <div id="m-loading">
     页面加载中，请耐心等待...
     <h1 style="white-space: pre;">
-      快速测试当前机器是否已经安装某字体，获取当前系统所有已安装字体
+      NGINX 在线配置测试工具，解析 NGINX 过程，
       工具链接：https://blog.luckly-mjw.cn/tool-show/local-font-checker/index.html
-      原理教程：https://www.zhangxinxu.com/wordpress/2018/02/js-detect-suppot-font-family/
       <img src="https://upyun.luckly-mjw.cn/Assets/blog/local-font-checker.png" alt="本地字体测试工具" title="logo" />
       <a target="_blank" href="https://blog.luckly-mjw.cn/tool-show/local-font-checker/index.html">点击跳转</a>
     </h1>
@@ -229,15 +228,19 @@
     </div>
     <div class="row">
       <div>
-        <div class="title">location 配置</div>
+        <div class="title">
+          location 配置
+          <a style="float:right" target="_blank" href="http://upyun.luckly-mjw.cn/Assets/nginx-online-config-test/tree.png">测试目录</a>
+          <a style="float:right;margin-right: 10px;" target="_blank" href="https://github.com/Momo707577045/nginx-online-config-test-data/blob/master/resource/assets/bg.jpg">测试文件夹</a>
+        </div>
         <div class="config-box">
           <pre>
 server {
     listen 80;
+    add_header Cache-Control no-cache;
     server_name nginx-test.luckly-mjw.cn;
     error_log  /var/log/nginx/error.log debug;
-    access_log  /var/log/nginx/access.log  main;
-    autoindex_localtime on;</pre>
+    access_log  /var/log/nginx/access.log  main;</pre>
           <textarea v-model="locationConf" class="textarea-box" @keydown="tabKey"></textarea>
           <pre>}</pre>
         </div>
@@ -251,14 +254,14 @@ server {
     </div>
     <div class="row">
       <div>
-        <div class="title">error.log（NGINX 解析过程）</div>
-        <textarea v-model="errorStr" class="textarea-box" readonly disabled style="height: 600px"
+        <div class="title">access.log（访问记录）</div>
+        <textarea v-model="accessStr" class="textarea-box" readonly disabled style="height: 600px"
           placeholder="等待接口测试"></textarea>
       </div>
       <div class="space"> </div>
       <div>
-        <div class="title">access.log（访问记录）</div>
-        <textarea v-model="accessStr" class="textarea-box" readonly disabled style="height: 600px"
+        <div class="title">error.log（NGINX 解析过程）</div>
+        <textarea v-model="errorStr" class="textarea-box" readonly disabled style="height: 600px"
           placeholder="等待接口测试"></textarea>
       </div>
     </div>
@@ -285,17 +288,20 @@ server {
     data() {
       return {
         tips: 'NGINX 测试', // 顶部提示
-        locationConf: 'location / { root /etc/nginx;        try_files $uri $uri/ /index.html; default_type text/plain;   }', // 
         resultStr: '', //
         accessStr: '', //
         errorStr: '', //
-        testPath: 'index.html', //
+        testPath: 'm/Main.ts',
         loading: false,
-        // locationConf: '', // 
-        // accessStr: '', //
-        // errorStr: '', //
-        // testPath: '', //
-        // loading: false,
+        locationConf: `
+location / {
+    root /nginx-test/resource/;
+    try_files $uri $uri/ /index.html;
+}
+location ^~/m/ {
+    alias /nginx-test/src/;
+    try_files $uri $uri/ /m/index.html;
+}`, // 
       }
     },
 
