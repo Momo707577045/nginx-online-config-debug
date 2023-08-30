@@ -6,8 +6,8 @@
   <meta name="viewport"
     content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <meta name="keywords" content="本地字体检测工具">
-  <meta name="description" content="Local Font Checker for web,检查所安装字体,检查本机是否安装某字体,Momo's Blog, LuckyMomo">
+  <meta name="keywords" content="nginx 在线配置测试工具">
+  <meta name="description" content="Nginx online config test,Nginx 在线配置测试,Nginx 调试,Nginx 解析过程,Momo's Blog, LuckyMomo">
   <title>Local Font Checker</title>
   <style>
     /*全局设置*/
@@ -206,23 +206,23 @@
   <div id="m-loading">
     页面加载中，请耐心等待...
     <h1 style="white-space: pre;">
-      NGINX 在线配置测试工具，解析 NGINX 过程，
-      工具链接：https://blog.luckly-mjw.cn/tool-show/local-font-checker/index.html
-      <img src="https://upyun.luckly-mjw.cn/Assets/blog/local-font-checker.png" alt="本地字体测试工具" title="logo" />
-      <a target="_blank" href="https://blog.luckly-mjw.cn/tool-show/local-font-checker/index.html">点击跳转</a>
+      NGINX 在线配置测试工具,Nginx online config test,Nginx 在线配置测试,Nginx 调试,Nginx 解析过程
+      工具链接：https://blog.luckly-mjw.cn/tool-show/nginx-online-config-test/index.html
+      <img src="https://upyun.luckly-mjw.cn/Assets/blog/nginx-online-config-test.png" alt="本地字体测试工具" title="logo" />
+      <a target="_blank" href="https://blog.luckly-mjw.cn/tool-show/nginx-online-config-test/index.html">点击跳转</a>
     </h1>
   </div>
   <section id="m-app" v-cloak>
     <!--顶部操作提示-->
     <section class="m-p-action g-box">{{tips}}</section>
-    <a class="m-p-help" target="_blank"
-      href="https://www.zhangxinxu.com/wordpress/2018/02/js-detect-suppot-font-family/">?</a>
-    <a class="m-p-github" target="_blank" href="https://github.com/Momo707577045/local-font-checker">github</a>
+    <a class="m-p-help" target="_blank" href="https://tengine.taobao.org/nginx_docs/en/">?</a>
+    <a class="m-p-github" target="_blank" href="https://github.com/Momo707577045/nginx-online-config-test">github</a>
     <a class="m-p-other" target="_blank" href="http://blog.luckly-mjw.cn/tool-show/index.html">其他实用工具</a>
 
     <!--文件载入-->
     <div class="url-box">
-      <div class="prefix">http://nginx-test.luckly-mjw.cn/</div><input type="text" v-model="testPath" placeholder="测试 URI">
+      <div class="prefix">http://nginx-test.luckly-mjw.cn/</div><input type="text" v-model="testPath"
+        placeholder="测试 URI">
       <div class="btn" @click="test" :class="{loading: loading}" :disabled="loading">{{ loading ? '接口测试中...' : '发起接口测试'
         }}</div>
     </div>
@@ -230,8 +230,10 @@
       <div>
         <div class="title">
           location 配置
-          <a style="float:right" target="_blank" href="http://upyun.luckly-mjw.cn/Assets/nginx-online-config-test/tree.png">测试目录</a>
-          <a style="float:right;margin-right: 10px;" target="_blank" href="https://github.com/Momo707577045/nginx-online-config-test-data/blob/master/resource/assets/bg.jpg">测试文件夹</a>
+          <a style="float:right" target="_blank"
+            href="http://upyun.luckly-mjw.cn/Assets/nginx-online-config-test/tree.png">测试目录</a>
+          <a style="float:right;margin-right: 10px;" target="_blank"
+            href="https://github.com/Momo707577045/nginx-online-config-test-data/blob/master/resource/assets/bg.jpg">测试文件夹</a>
         </div>
         <div class="config-box">
           <pre>
